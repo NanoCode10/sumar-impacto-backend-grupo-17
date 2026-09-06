@@ -19,6 +19,41 @@ trabajados durante la cursada.
 Inicialmente la persistencia de datos se realizará utilizando archivos **JSON** y,
 posteriormente, se incorporará **MongoDB**.
 
+## Estado actual
+
+Actualmente se encuentra implementada la base inicial del backend. Este es un
+estado parcial correspondiente a la **Etapa 1** del proyecto y no representa la
+documentación final del sistema.
+
+Lo implementado hasta el momento incluye:
+
+- Node.js
+- Express
+- arquitectura MVC
+- persistencia en archivos JSON
+- Pug como motor de vistas
+- ruta `GET /organizations/:id`
+
+La siguiente captura corresponde a una prueba realizada con Postman sobre el
+endpoint `GET /organizations/1`, cuya respuesta fue `HTTP 200 OK`.
+
+<p align="center">
+  <img src="docs/images/postman-get-organization-1.png"
+       alt="Prueba en Postman del endpoint GET /organizations/1"
+       width="900">
+</p>
+
+<p align="center">
+  <em>Prueba exitosa del endpoint GET /organizations/1 utilizando Postman.</em>
+</p>
+
+Casos actualmente verificados:
+
+- GET /organizations/1 → 200 OK
+- GET /organizations/999 → 404 Not Found
+- GET /organizations/abc → 400 Bad Request
+- GET /organizations/0 → 400 Bad Request
+
 ## Tecnologías
 
 - JavaScript
