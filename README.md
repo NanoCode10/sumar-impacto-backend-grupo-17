@@ -62,6 +62,48 @@ Casos actualmente verificados:
 - JSON
 - MongoDB *(más adelante durante la cursada)*
 
+## Cómo ejecutar el proyecto
+
+1. Instalar las dependencias:
+
+```bash
+npm install
+```
+
+2. Levantar el servidor en modo desarrollo:
+
+```bash
+npm run dev
+```
+
+Este comando ejecuta `nodemon index.js`, por lo que el servidor se reinicia automáticamente cuando se modifican archivos.
+
+También puede ejecutarse sin Nodemon:
+
+```bash
+npm start
+```
+
+que ejecuta directamente:
+
+```bash
+node index.js
+```
+
+Una vez iniciado el servidor, el endpoint actualmente disponible puede probarse desde el navegador o Postman:
+
+```text
+http://localhost:3000/organizations/1
+```
+
+O desde la terminal:
+
+```bash
+curl -i http://localhost:3000/organizations/1
+```
+
+Los comandos `npm start` y `npm run dev` están definidos en la sección `scripts` de `package.json`.
+
 ## Grupo
 
 **Grupo 17 - Desarrollo de Sistemas Web Back End**
