@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "name": "Comedor Esperanza",
+    "type": "comedor",
+    "email": "contacto@esperanza.org",
+    "status": "approved"
+  }
+]
