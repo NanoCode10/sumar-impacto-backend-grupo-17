@@ -1,6 +1,7 @@
 const express = require("express");
 
 const organizationsRoutes = require("./routes/organizationsRoutes");
+const campaignsRoutes = require("./routes/campaignsRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -13,6 +14,7 @@ app.set("view engine", "pug");
 
 // fundamental para montar el Router de organizaciones en la ruta "/organizations"
 app.use("/organizations", organizationsRoutes);
+app.use("/campaigns", campaignsRoutes);
 
 /**
  * MÓDULO CAMPAIGN (segundo módulo del grupo) - PENDIENTE
