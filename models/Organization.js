@@ -52,14 +52,12 @@ class Organization {
    * Devuelve TODAS las organizaciones como array de instancias de Organization.
    */
   static findAll() {
-    // TODO: leer el archivo data/organizations.json con fs.readFileSync(dataPath, "utf-8").
-    // TODO: parsear el contenido con JSON.parse para obtener un array de objetos planos.
-    // TODO: recorrer ese array (map) y convertir cada objeto plano en una instancia
-    //       new Organization(obj.id, obj.name, obj.type, obj.email, obj.status).
-    // TODO: devolver el array de instancias resultante.
-    // TODO: si el archivo pudiera no existir, definir con el grupo qué hacer
-    //       (por ahora asumimos que siempre existe, igual que en findById).
-    throw new Error("TODO: implementar Organization.findAll()");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const organizations = JSON.parse(rawData);
+
+    return organizations.map(
+      (org) => new Organization(org.id, org.name, org.type, org.email, org.status)
+    );
   }
 
   /**
@@ -67,15 +65,24 @@ class Organization {
    * @param {{name: string, type: string, email: string, status: string}} data
    */
   static create(data) {
-    // TODO: leer data/organizations.json y parsearlo a un array (igual que en findAll).
-    // TODO: generar el nuevo id EN EL SERVIDOR (ej: mayor id existente + 1, o 1 si está vacío).
-    // TODO: NO usar ningún id que venga en "data" / en el body del request: se ignora por seguridad.
-    // TODO: crear la instancia new Organization(nuevoId, data.name, data.type, data.email, data.status).
-    // TODO: agregar la nueva organización al array (push).
-    // TODO: serializar el array completo con JSON.stringify(array, null, 2) para que quede legible.
-    // TODO: escribir el resultado en dataPath con fs.writeFileSync.
-    // TODO: devolver la instancia recién creada (el recurso creado).
-    throw new Error("TODO: implementar Organization.create(data)");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const organizations = JSON.parse(rawData);
+
+    const maxId = organizations.reduce((max, org) => (org.id > max ? org.id : max), 0);
+    const newId = maxId + 1;
+
+    const newOrg = new Organization(
+      newId,
+      data.name,
+      data.type,
+      data.email,
+      data.status || "approved"
+    );
+
+    organizations.push(newOrg);
+    fs.writeFileSync(dataPath, JSON.stringify(organizations, null, 2), "utf-8");
+
+    return newOrg;
   }
 
   /**
@@ -85,14 +92,23 @@ class Organization {
    * @returns {Organization|null} la organización actualizada, o null si no existe.
    */
   static update(id, data) {
-    // TODO: leer y parsear data/organizations.json a un array.
-    // TODO: buscar el índice de la organización cuyo id coincide (findIndex).
-    // TODO: si no se encuentra, devolver null (el controller responderá 404).
-    // TODO: actualizar SOLO los campos permitidos: name, type, email, status.
-    //       El id NO se toca: se mantiene el original.
-    // TODO: volver a persistir el array completo con JSON.stringify(array, null, 2) + fs.writeFileSync.
-    // TODO: devolver una instancia de Organization con los datos ya actualizados.
-    throw new Error("TODO: implementar Organization.update(id, data)");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const organizations = JSON.parse(rawData);
+
+    const index = organizations.findIndex((org) => org.id === id);
+    if (index === -1) {
+      return null;
+    }
+
+    if (data.name !== undefined) organizations[index].name = data.name;
+    if (data.type !== undefined) organizations[index].type = data.type;
+    if (data.email !== undefined) organizations[index].email = data.email;
+    if (data.status !== undefined) organizations[index].status = data.status;
+
+    fs.writeFileSync(dataPath, JSON.stringify(organizations, null, 2), "utf-8");
+
+    const updated = organizations[index];
+    return new Organization(updated.id, updated.name, updated.type, updated.email, updated.status);
   }
 
   /**
@@ -100,14 +116,18 @@ class Organization {
    * @param {number} id
    */
   static delete(id) {
-    // TODO: NO implementar todavía. Primero el grupo debe acordar la ESTRATEGIA de eliminación:
-    //   a) eliminación física: sacar el objeto del array y persistir el JSON sin ese registro;
-    //   b) eliminación lógica: mantener el registro pero marcarlo (ej: deleted: true);
-    //   c) mediante status: cambiar status a "inactive" / "archived" y no borrar nada.
-    // TODO: cada opción impacta a findById/findAll (¿deben seguir devolviendo los eliminados?).
-    // TODO: definir también qué pasa con las Campaign asociadas a esa Organization.
-    // TODO: recién cuando haya decisión de equipo, implementar aquí la opción elegida.
-    throw new Error("TODO: implementar Organization.delete(id) (falta acordar estrategia: física / lógica / por status)");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const organizations = JSON.parse(rawData);
+
+    const index = organizations.findIndex((org) => org.id === id);
+    if (index === -1) {
+      return null;
+    }
+
+    const [deletedOrg] = organizations.splice(index, 1);
+    fs.writeFileSync(dataPath, JSON.stringify(organizations, null, 2), "utf-8");
+
+    return new Organization(deletedOrg.id, deletedOrg.name, deletedOrg.type, deletedOrg.email, deletedOrg.status);
   }
 }
 

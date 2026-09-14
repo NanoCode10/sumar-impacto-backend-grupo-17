@@ -21,21 +21,6 @@ posteriormente, se incorporará **MongoDB**.
 
 ## Estado actual
 
-Actualmente se encuentra implementada la base inicial del backend. Este es un
-estado parcial correspondiente a la **Etapa 1** del proyecto y no representa la
-documentación final del sistema.
-
-Lo implementado hasta el momento incluye:
-
-- Node.js
-- Express
-- arquitectura MVC
-- persistencia en archivos JSON
-- Pug como motor de vistas
-- ruta `GET /organizations/:id`
-
-La siguiente captura corresponde a una prueba realizada con Postman sobre el
-endpoint `GET /organizations/1`, cuya respuesta fue `HTTP 200 OK`.
 
 <p align="center">
   <img src="docs/images/postman-get-organization-1.png"
@@ -47,20 +32,12 @@ endpoint `GET /organizations/1`, cuya respuesta fue `HTTP 200 OK`.
   <em>Prueba exitosa del endpoint GET /organizations/1 utilizando Postman.</em>
 </p>
 
-Casos actualmente verificados:
 
-- GET /organizations/1 → 200 OK
-- GET /organizations/999 → 404 Not Found
-- GET /organizations/abc → 400 Bad Request
-- GET /organizations/0 → 400 Bad Request
 
 ## Tecnologías
 
-- JavaScript
 - Node.js
 - Express
-- JSON
-- MongoDB *(más adelante durante la cursada)*
 
 ## Cómo ejecutar el proyecto
 
@@ -76,38 +53,10 @@ npm install
 npm run dev
 ```
 
-Este comando ejecuta `nodemon index.js`, por lo que el servidor se reinicia automáticamente cuando se modifican archivos.
-
-También puede ejecutarse sin Nodemon:
-
-```bash
-npm start
-```
-
-que ejecuta directamente:
 
 ```bash
 node index.js
 ```
 
-Una vez iniciado el servidor, el endpoint actualmente disponible puede probarse desde el navegador o Postman:
 
 ```text
-http://localhost:3000/organizations/1
-```
-
-O desde la terminal:
-
-```bash
-curl -i http://localhost:3000/organizations/1
-```
-
-Los comandos `npm start` y `npm run dev` están definidos en la sección `scripts` de `package.json`.
-
-## Grupo
-
-**Grupo 17 - Desarrollo de Sistemas Web Back End**
-
-## Estado
-
-🚧 Proyecto en desarrollo.

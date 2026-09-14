@@ -1,3 +1,8 @@
+const fs = require("fs");
+const path = require("path");
+
+const dataPath = path.join(__dirname, "..", "data", "campaigns.json");
+
 /**
  * RESPONSABILIDAD DE LA CLASE
  * Campaign es el Model del dominio "campaña". Se encarga de:
@@ -17,7 +22,7 @@
  *
  * ESTADO DE LOS MÉTODOS
  *  - constructor -> IMPLEMENTADO.
- *  - findById    -> PENDIENTE.
+ *  - findById    -> IMPLEMENTADO.
  *  - findAll     -> PENDIENTE.
  *  - create      -> PENDIENTE (además debe validar organizationId contra Organization).
  *  - update      -> PENDIENTE (idem create respecto de organizationId).
@@ -41,14 +46,23 @@ class Campaign {
    * @param {number} id
    */
   static findById(id) {
-    // TODO: definir dataPath con path.join(__dirname, "..", "data", "campaigns.json")
-    //       (requerir "fs" y "path" arriba, igual que en Organization.js).
-    // TODO: leer el archivo con fs.readFileSync y parsearlo con JSON.parse a un array.
-    // TODO: buscar el objeto cuyo id coincide (find).
-    // TODO: si no existe, devolver null.
-    // TODO: si existe, devolver new Campaign(obj.id, obj.organizationId, obj.title,
-    //       obj.description, obj.targetAmount, obj.status).
-    throw new Error("TODO: implementar Campaign.findById(id)");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const campaigns = JSON.parse(rawData);
+
+    const found = campaigns.find((camp) => camp.id === id);
+
+    if (!found) {
+      return null;
+    }
+
+    return new Campaign(
+      found.id,
+      found.organizationId,
+      found.title,
+      found.description,
+      found.targetAmount,
+      found.status
+    );
   }
 
   /**

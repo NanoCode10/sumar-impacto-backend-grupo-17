@@ -9,11 +9,11 @@ const Organization = require("../models/Organization");
  *  - NO accede al JSON ni contiene lógica de persistencia (eso es del Model).
  *
  * ESTADO
- *  - getOrganizationById -> IMPLEMENTADO y funcionando. NO modificar.
- *  - getOrganizations    -> PENDIENTE (esqueleto abajo).
- *  - createOrganization  -> PENDIENTE (esqueleto abajo).
- *  - updateOrganization  -> PENDIENTE (esqueleto abajo).
- *  - deleteOrganization  -> PENDIENTE (esqueleto abajo).
+ *  - getOrganizationById -> IMPLEMENTADO.
+ *  - getOrganizations    -> IMPLEMENTADO.
+ *  - createOrganization  -> IMPLEMENTADO.
+ *  - updateOrganization  -> IMPLEMENTADO.
+ *  - deleteOrganization  -> IMPLEMENTADO.
  */
 
 function getOrganizationById(req, res) {
@@ -35,53 +35,59 @@ function getOrganizationById(req, res) {
  * GET /organizations  -> listado de todas las organizaciones.
  */
 function getOrganizations(req, res) {
-  // TODO: no recibe nada especial de req (a futuro podría aceptar filtros en req.query).
-  // TODO: llamar a Organization.findAll() para obtener el array de instancias.
-  // TODO: responder 200 con res.json(organizations)
-  //       (o res.render(...) si el grupo decide devolver HTML en lugar de JSON).
-  throw new Error("TODO: implementar getOrganizations(req, res)");
+  const organizations = Organization.findAll();
+  res.status(200).json(organizations);
 }
 
 /**
  * POST /organizations  -> crea una organización.
  */
 function createOrganization(req, res) {
-  // TODO: leer los datos de req.body: name, type, email, status.
-  //       IGNORAR cualquier id que venga en el body (el id lo genera el Model).
-  // TODO: (opcional, a acordar) validar que los campos obligatorios estén presentes;
-  //       si faltan, responder 400 con un mensaje de error.
-  // TODO: llamar a Organization.create({ name, type, email, status }).
-  // TODO: responder 201 con res.json(organizationCreada).
-  throw new Error("TODO: implementar createOrganization(req, res)");
+  const { name, type, email, status } = req.body;
+
+  if (!name || !type || !email) {
+    return res.status(400).json({ error: "Nombre, tipo y email son campos obligatorios" });
+  }
+
+  const newOrganization = Organization.create({ name, type, email, status });
+  res.status(201).json(newOrganization);
 }
 
 /**
  * PUT /organizations/:id  -> actualiza una organización existente.
  */
 function updateOrganization(req, res) {
-  // TODO: obtener el id con Number(req.params.id) (la validación de formato la hará el middleware validateId).
-  // TODO: leer los campos a actualizar de req.body: name, type, email, status.
-  // TODO: llamar a Organization.update(id, data).
-  // TODO: si el Model devuelve null -> responder 404 (recurso inexistente).
-  // TODO: si devuelve la organización actualizada -> responder 200 con res.json(organization).
-  throw new Error("TODO: implementar updateOrganization(req, res)");
+  const id = Number(req.params.id);
+  const { name, type, email, status } = req.body;
+
+  const updatedOrganization = Organization.update(id, { name, type, email, status });
+
+  if (!updatedOrganization) {
+    return res.status(404).json({ error: "Organización no encontrada" });
+  }
+
+  res.status(200).json(updatedOrganization);
 }
 
 /**
  * DELETE /organizations/:id  -> elimina una organización.
  */
 function deleteOrganization(req, res) {
-  // TODO: obtener el id con Number(req.params.id).
-  // TODO: NO implementar hasta que el grupo defina la estrategia de eliminación
-  //       (ver Organization.delete: física / lógica / por status).
-  // TODO: según la estrategia, la respuesta será 204 (sin cuerpo) o 200 con el recurso afectado.
-  // TODO: contemplar el caso de id inexistente -> responder 404.
-  throw new Error("TODO: implementar deleteOrganization(req, res)");
+  const id = Number(req.params.id);
+
+  const deletedOrganization = Organization.delete(id);
+
+  if (!deletedOrganization) {
+    return res.status(404).json({ error: "Organización no encontrada" });
+  }
+
+  res.status(200).json({ message: "Organización eliminada correctamente", organization: deletedOrganization });
 }
 
-// NOTA: por ahora SOLO se exporta getOrganizationById, que es lo único conectado a una ruta.
-// Los esqueletos getOrganizations / createOrganization / updateOrganization / deleteOrganization
-// quedan definidos y documentados en este archivo pero SIN exportar, para dejar explícito
-// que son trabajo PENDIENTE y evitar que se enganchen al router por error.
-// TODO: al implementar cada uno, agregarlo a module.exports y recién ahí conectarlo en routes/organizationsRoutes.js.
-module.exports = { getOrganizationById };
+module.exports = {
+  getOrganizationById,
+  getOrganizations,
+  createOrganization,
+  updateOrganization,
+  deleteOrganization
+};

@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  .card
+    h2 Campaña: #{campaign.title}
+    .field
+      .field-label ID
+      .field-value= campaign.id
+    .field
+      .field-label ID de Organización
+      .field-value= campaign.organizationId
+    .field
+      .field-label Título
+      .field-value= campaign.title
+    .field
+      .field-label Descripción
+      .field-value= campaign.description
+    .field
+      .field-label Monto Objetivo
+      .field-value $#{campaign.targetAmount}
+    .field
+      .field-label Estado
+      .field-value
+        span.badge= campaign.status
