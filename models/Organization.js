@@ -21,10 +21,10 @@ const dataPath = path.join(__dirname, "..", "data", "organizations.json");
  * ESTADO DE LOS MÉTODOS
  *  - constructor  -> IMPLEMENTADO y funcionando.
  *  - findById     -> IMPLEMENTADO y funcionando (solo lectura).
- *  - findAll      -> PENDIENTE.
- *  - create       -> PENDIENTE.
- *  - update       -> PENDIENTE.
- *  - delete       -> PENDIENTE (falta acordar estrategia de eliminación).
+ *  - findAll      -> IMPLEMENTADO y funcionando.
+ *  - create       -> IMPLEMENTADO y funcionando.
+ *  - update       -> IMPLEMENTADO y funcionando.
+ *  - delete       -> IMPLEMENTADO y funcionando.
  */
 class Organization {
   constructor(id, name, type, email, status) {
