@@ -4,6 +4,9 @@ const path = require("path");
 const organizationsRoutes = require("./routes/organizationsRoutes");
 const campaignsRoutes = require("./routes/campaignsRoutes");
 
+const Organization = require("./models/Organization");
+const Campaign = require("./models/Campaign");
+
 const app = express();
 const PORT = 3000;
 
@@ -13,6 +16,13 @@ app.use(express.json());
 // Configuración del motor de plantillas Pug
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
+
+// Ruta de inicio
+app.get("/", (req, res) => {
+  const organizations = Organization.findAll();
+  const campaigns = Campaign.findAll();
+  res.render("home", { title: "SumarImpacto", organizations, campaigns });
+});
 
 // Rutas principales
 app.use("/organizations", organizationsRoutes);

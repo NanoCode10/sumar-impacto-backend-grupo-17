@@ -1,5 +1,24 @@
 const Campaign = require("../models/Campaign");
 
+/**
+ * RESPONSABILIDAD DE LA CAPA CONTROLLER
+ * El controller traduce entre HTTP y el Model:
+ *  - lee lo que llega en req (params, query, body);
+ *  - llama al Model correspondiente (Campaign);
+ *  - decide el status HTTP y el cuerpo de la respuesta (res);
+ *  - NO accede al JSON ni contiene lógica de persistencia (eso es del Model).
+ *
+ * ESTADO
+ *  - getCampaignById  -> IMPLEMENTADO.
+ *  - getCampaigns     -> IMPLEMENTADO.
+ *  - createCampaign   -> IMPLEMENTADO.
+ *  - updateCampaign   -> IMPLEMENTADO.
+ *  - deleteCampaign   -> IMPLEMENTADO.
+ */
+
+/**
+ * GET /campaigns/:id -> muestra una campaña como vista Pug.
+ */
 function getCampaignById(req, res) {
   const id = Number(req.params.id);
 
@@ -23,8 +42,14 @@ function createCampaign(req, res) {
   if (!title || !description || !targetAmount || !organizationId) {
     return res.status(400).json({ error: "Título, descripción, monto objetivo y organización son obligatorios" });
   }
-  const newCampaign = Campaign.create({ title, description, targetAmount, status, organizationId });
-  res.status(201).json(newCampaign);
+
+  try {
+    const newCampaign = Campaign.create({ title, description, targetAmount, status, organizationId });
+    res.status(201).json(newCampaign);
+  } catch (err) {
+    const status = err.statusCode || 500;
+    res.status(status).json({ error: err.message });
+  }
 }
 
 /* PUT */
@@ -32,12 +57,17 @@ function updateCampaign(req, res) {
   const id = Number(req.params.id);
   const { title, description, targetAmount, status, organizationId } = req.body;
 
-  const updatedCampaign = Campaign.update(id, { title, description, targetAmount, status, organizationId });
+  try {
+    const updatedCampaign = Campaign.update(id, { title, description, targetAmount, status, organizationId });
 
-  if (!updatedCampaign) {
-    return res.status(404).json({ error: "Campaña no encontrada" });
+    if (!updatedCampaign) {
+      return res.status(404).json({ error: "Campaña no encontrada" });
+    }
+    res.status(200).json(updatedCampaign);
+  } catch (err) {
+    const status = err.statusCode || 500;
+    res.status(status).json({ error: err.message });
   }
-  res.status(200).json(updatedCampaign);
 }
 
 /* DELETE */
@@ -51,4 +81,5 @@ function deleteCampaign(req, res) {
 
   res.status(200).json({ message: "Campaña eliminada correctamente", campaign: deletedCampaign });
 }
+
 module.exports = { getCampaignById, getCampaigns, createCampaign, updateCampaign, deleteCampaign };

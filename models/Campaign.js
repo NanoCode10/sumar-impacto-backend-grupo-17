@@ -7,7 +7,7 @@ const dataPath = path.join(__dirname, "..", "data", "campaigns.json");
  * RESPONSABILIDAD DE LA CLASE
  * Campaign es el Model del dominio "campaña". Se encarga de:
  *  - representar una campaña en memoria (constructor);
- *  - leer y (a futuro) escribir la persistencia en data/campaigns.json;
+ *  - leer y escribir la persistencia en data/campaigns.json;
  *  - ofrecer métodos estáticos de acceso a datos (findById, findAll, create, update, delete);
  *  - garantizar que toda campaña pertenezca a una Organization existente (organizationId válido).
  * La capa de rutas/controllers NO debe leer el JSON directamente: siempre pasa por este Model.
@@ -23,13 +23,10 @@ const dataPath = path.join(__dirname, "..", "data", "campaigns.json");
  * ESTADO DE LOS MÉTODOS
  *  - constructor -> IMPLEMENTADO.
  *  - findById    -> IMPLEMENTADO.
- *  - findAll     -> PENDIENTE.
- *  - create      -> PENDIENTE (además debe validar organizationId contra Organization).
- *  - update      -> PENDIENTE (idem create respecto de organizationId).
- *  - delete      -> PENDIENTE (misma discusión de estrategia que Organization.delete).
- *
- * NOTA: todavía NO se implementa acceso real a data/campaigns.json. Los pasos quedan
- *       descritos como TODO para que el segundo módulo del grupo los desarrolle.
+ *  - findAll     -> IMPLEMENTADO.
+ *  - create      -> IMPLEMENTADO (valida organizationId contra Organization).
+ *  - update      -> IMPLEMENTADO (valida organizationId si se envía).
+ *  - delete      -> IMPLEMENTADO (eliminación física, igual que Organization.delete).
  */
 class Campaign {
   constructor(id, organizationId, title, description, targetAmount, status) {
@@ -44,6 +41,7 @@ class Campaign {
   /**
    * Busca una campaña por su id y la devuelve como instancia de Campaign, o null.
    * @param {number} id
+   * @returns {Campaign|null}
    */
   static findById(id) {
     const rawData = fs.readFileSync(dataPath, "utf-8");
@@ -67,57 +65,136 @@ class Campaign {
 
   /**
    * Devuelve TODAS las campañas como array de instancias de Campaign.
+   * @returns {Campaign[]}
    */
   static findAll() {
-    // TODO: leer y parsear data/campaigns.json a un array de objetos planos.
-    // TODO: recorrer con map y convertir cada objeto en new Campaign(...) con sus 6 campos.
-    // TODO: devolver el array de instancias.
-    throw new Error("TODO: implementar Campaign.findAll()");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const campaigns = JSON.parse(rawData);
+
+    return campaigns.map(
+      (camp) =>
+        new Campaign(
+          camp.id,
+          camp.organizationId,
+          camp.title,
+          camp.description,
+          camp.targetAmount,
+          camp.status
+        )
+    );
   }
 
   /**
    * Crea una nueva campaña, la persiste y devuelve el recurso creado.
+   * Lanza un error si el organizationId no corresponde a una Organization existente.
    * @param {{organizationId: number, title: string, description: string, targetAmount: number, status: string}} data
+   * @returns {Campaign}
    */
   static create(data) {
-    // TODO: VALIDAR primero que data.organizationId corresponda a una Organization existente:
-    //       usar Organization.findById(data.organizationId); si devuelve null, NO persistir
-    //       y avisar el error (el controller responderá 400/404 según acuerde el grupo).
-    // TODO: leer y parsear data/campaigns.json a un array.
-    // TODO: generar el id EN EL SERVIDOR (mayor id + 1, o 1 si está vacío). Ignorar cualquier id del body.
-    // TODO: crear new Campaign(nuevoId, data.organizationId, data.title, data.description,
-    //       data.targetAmount, data.status).
-    // TODO: push al array, JSON.stringify(array, null, 2) y fs.writeFileSync en el dataPath.
-    // TODO: devolver la instancia creada.
-    throw new Error("TODO: implementar Campaign.create(data)");
+    // Validar que la organización referenciada exista (importación diferida para evitar
+    // dependencia circular en el momento de la carga del módulo).
+    const Organization = require("./Organization");
+    const org = Organization.findById(Number(data.organizationId));
+    if (!org) {
+      const err = new Error("La organización indicada no existe");
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const campaigns = JSON.parse(rawData);
+
+    // El servidor genera el id: máximo id existente + 1 (o 1 si no hay campañas).
+    const maxId = campaigns.reduce((max, c) => (c.id > max ? c.id : max), 0);
+    const newId = maxId + 1;
+
+    const newCampaign = new Campaign(
+      newId,
+      Number(data.organizationId),
+      data.title,
+      data.description,
+      Number(data.targetAmount),
+      data.status || "active"
+    );
+
+    campaigns.push(newCampaign);
+    fs.writeFileSync(dataPath, JSON.stringify(campaigns, null, 2), "utf-8");
+
+    return newCampaign;
   }
 
   /**
    * Actualiza los campos permitidos de una campaña existente.
    * @param {number} id
-   * @param {object} data
+   * @param {{organizationId?: number, title?: string, description?: string, targetAmount?: number, status?: string}} data
    * @returns {Campaign|null} la campaña actualizada, o null si no existe.
    */
   static update(id, data) {
-    // TODO: leer y parsear data/campaigns.json a un array.
-    // TODO: buscar el índice de la campaña por id (findIndex); si no existe, devolver null.
-    // TODO: si "data" trae organizationId, VALIDAR que exista con Organization.findById
-    //       antes de aplicar el cambio; si no existe, no persistir y avisar el error.
-    // TODO: actualizar solo los campos permitidos: organizationId, title, description,
-    //       targetAmount, status. El id se mantiene.
-    // TODO: persistir el array completo con JSON.stringify(array, null, 2) + fs.writeFileSync.
-    // TODO: devolver una instancia de Campaign con los datos actualizados.
-    throw new Error("TODO: implementar Campaign.update(id, data)");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const campaigns = JSON.parse(rawData);
+
+    const index = campaigns.findIndex((c) => c.id === id);
+    if (index === -1) {
+      return null;
+    }
+
+    // Si se quiere cambiar organizationId, validar que la nueva organización exista.
+    if (data.organizationId !== undefined) {
+      const Organization = require("./Organization");
+      const org = Organization.findById(Number(data.organizationId));
+      if (!org) {
+        const err = new Error("La organización indicada no existe");
+        err.statusCode = 404;
+        throw err;
+      }
+      campaigns[index].organizationId = Number(data.organizationId);
+    }
+
+    // Actualizar solo los campos permitidos; el id nunca cambia.
+    if (data.title !== undefined) campaigns[index].title = data.title;
+    if (data.description !== undefined) campaigns[index].description = data.description;
+    if (data.targetAmount !== undefined) campaigns[index].targetAmount = Number(data.targetAmount);
+    if (data.status !== undefined) campaigns[index].status = data.status;
+
+    fs.writeFileSync(dataPath, JSON.stringify(campaigns, null, 2), "utf-8");
+
+    const updated = campaigns[index];
+    return new Campaign(
+      updated.id,
+      updated.organizationId,
+      updated.title,
+      updated.description,
+      updated.targetAmount,
+      updated.status
+    );
   }
 
   /**
-   * Elimina una campaña.
+   * Elimina físicamente una campaña del JSON.
+   * Estrategia: eliminación física (igual que Organization.delete).
    * @param {number} id
+   * @returns {Campaign|null} la campaña eliminada, o null si no existía.
    */
   static delete(id) {
-    // TODO: NO implementar todavía. Usar la MISMA decisión de estrategia que Organization.delete
-    //       (física / lógica / por status). Mantener el criterio uniforme en todo el proyecto.
-    throw new Error("TODO: implementar Campaign.delete(id) (falta acordar estrategia, igual que Organization.delete)");
+    const rawData = fs.readFileSync(dataPath, "utf-8");
+    const campaigns = JSON.parse(rawData);
+
+    const index = campaigns.findIndex((c) => c.id === id);
+    if (index === -1) {
+      return null;
+    }
+
+    const [deleted] = campaigns.splice(index, 1);
+    fs.writeFileSync(dataPath, JSON.stringify(campaigns, null, 2), "utf-8");
+
+    return new Campaign(
+      deleted.id,
+      deleted.organizationId,
+      deleted.title,
+      deleted.description,
+      deleted.targetAmount,
+      deleted.status
+    );
   }
 }
 
