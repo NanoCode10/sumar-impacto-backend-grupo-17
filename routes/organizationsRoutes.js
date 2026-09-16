@@ -2,7 +2,7 @@ const express = require("express");
 
 // import Middlewares
 const validateId = require("../middlewares/validateId");
-const { validateOrganization } = require("../middlewares/validate");
+const { validateOrganization } = require("../middlewares/validateBody");
 
 // import Controllers
 const {

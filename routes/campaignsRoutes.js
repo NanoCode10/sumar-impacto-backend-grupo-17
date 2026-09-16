@@ -1,7 +1,7 @@
 const express = require("express");
 
 const validateId = require("../middlewares/validateId");
-const { validateCampaign } = require("../middlewares/validate");
+const { validateCampaign } = require("../middlewares/validateBody");
 
 const {
   getCampaigns,
@@ -9,7 +9,7 @@ const {
   createCampaign,
   updateCampaign,
   deleteCampaign
-} = require("../controllers/campaignsControllers");
+} = require("../controllers/campaignsController");
 
 const router = express.Router();
 

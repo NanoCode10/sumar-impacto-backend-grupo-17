@@ -4,7 +4,7 @@ const validateId = require("../middlewares/validateId");
 const Organization = require("../models/Organization");
 const Campaign = require("../models/Campaign");
 const { renderOrganization } = require("../controllers/organizationsController");
-const { renderCampaign } = require("../controllers/campaignsControllers");
+const { renderCampaign } = require("../controllers/campaignsController");
 
 /**
  * Páginas HTML generadas con Pug. Son las únicas rutas que usan res.render;
