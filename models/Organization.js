@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const norm = require("../utils/norm");
+
 const dataPath = path.join(__dirname, "..", "data", "organizations.json");
 
 /**
@@ -60,11 +62,27 @@ class Organization {
   }
 
   /**
-   * Devuelve TODAS las organizaciones como array de instancias de Organization.
+   * Devuelve las organizaciones como array de instancias de Organization.
+   * Sin filtros, todas. Con filtros, sólo las que coinciden.
+   *
+   * El filtrado vive acá, en la capa de datos, y no en el controller: cuando los
+   * datos salgan de MongoDB esto se convierte en una query que resuelve la base,
+   * y el cambio queda contenido en este archivo.
+   *
+   * @param {{type?: string, status?: string}} filtros
    */
-  static findAll() {
+  static findAll(filtros = {}) {
     const rawData = fs.readFileSync(dataPath, "utf-8");
-    const organizations = JSON.parse(rawData);
+    let organizations = JSON.parse(rawData);
+
+    // norm() de los dos lados: "?type=fundacion" encuentra "fundación".
+    if (filtros.type !== undefined) {
+      organizations = organizations.filter((org) => norm(org.type) === norm(filtros.type));
+    }
+
+    if (filtros.status !== undefined) {
+      organizations = organizations.filter((org) => norm(org.status) === norm(filtros.status));
+    }
 
     return organizations.map(
       (org) => new Organization(org.id, org.name, org.type, org.email, org.status)

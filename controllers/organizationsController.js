@@ -1,4 +1,5 @@
 const Organization = require("../models/Organization");
+const Campaign = require("../models/Campaign");
 
 /**
  * RESPONSABILIDAD DE LA CAPA CONTROLLER
@@ -16,11 +17,26 @@ const Organization = require("../models/Organization");
  */
 
 /**
- * GET /api/organizations  -> listado de todas las organizaciones.
+ * GET /api/organizations  -> listado, con filtros opcionales por type y status.
+ * Los filtros los valida y canoniza validateQuery, que los deja en req.filtros.
  */
 function getOrganizations(req, res) {
-  const organizations = Organization.findAll();
+  const organizations = Organization.findAll(req.filtros);
   res.status(200).json(organizations);
+}
+
+/**
+ * GET /api/organizations/:id/campaigns  -> las campañas de una organización.
+ */
+function getOrganizationCampaigns(req, res) {
+  const id = Number(req.params.id);
+  const organization = Organization.findById(id);
+
+  if (!organization) {
+    return res.status(404).json({ error: "Organización no encontrada" });
+  }
+
+  res.status(200).json(Campaign.findAll({ organizationId: id }));
 }
 
 /**
@@ -98,6 +114,7 @@ function deleteOrganization(req, res) {
 
 module.exports = {
   getOrganizations,
+  getOrganizationCampaigns,
   getOrganizationById,
   renderOrganization,
   createOrganization,

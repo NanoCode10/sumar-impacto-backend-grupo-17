@@ -3,10 +3,12 @@ const express = require("express");
 // import Middlewares
 const validateId = require("../middlewares/validateId");
 const { validateOrganization } = require("../middlewares/validateBody");
+const { validateOrganizationQuery } = require("../middlewares/validateQuery");
 
 // import Controllers
 const {
   getOrganizations,
+  getOrganizationCampaigns,
   getOrganizationById,
   createOrganization,
   updateOrganization,
@@ -17,9 +19,10 @@ const {
 const router = express.Router();
 
 // Rutas de la API del recurso, montadas en /api/organizations (ver index.js)
-router.get("/", getOrganizations);
+router.get("/", validateOrganizationQuery, getOrganizations);
 router.post("/", validateOrganization("create"), createOrganization);
 router.get("/:id", validateId, getOrganizationById);
+router.get("/:id/campaigns", validateId, getOrganizationCampaigns);
 router.put("/:id", validateId, validateOrganization("update"), updateOrganization);
 router.delete("/:id", validateId, deleteOrganization);
 

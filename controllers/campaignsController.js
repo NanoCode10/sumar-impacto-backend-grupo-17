@@ -10,10 +10,11 @@ const Campaign = require("../models/Campaign");
  */
 
 /**
- * GET /api/campaigns  -> listado de todas las campañas.
+ * GET /api/campaigns  -> listado, con filtros opcionales por organizationId y status.
+ * Los filtros los valida y canoniza validateQuery, que los deja en req.filtros.
  */
 function getCampaigns(req, res) {
-  const campaigns = Campaign.findAll();
+  const campaigns = Campaign.findAll(req.filtros);
   res.status(200).json(campaigns);
 }
 

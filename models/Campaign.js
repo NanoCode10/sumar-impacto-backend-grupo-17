@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const norm = require("../utils/norm");
+
 const dataPath = path.join(__dirname, "..", "data", "campaigns.json");
 
 /**
@@ -67,12 +69,25 @@ class Campaign {
   }
 
   /**
-   * Devuelve TODAS las campañas como array de instancias de Campaign.
+   * Devuelve las campañas como array de instancias de Campaign.
+   * Sin filtros, todas. Con filtros, sólo las que coinciden. Ver el comentario
+   * de Organization.findAll sobre por qué el filtrado vive en el modelo.
+   *
+   * @param {{organizationId?: number, status?: string}} filtros
    * @returns {Campaign[]}
    */
-  static findAll() {
+  static findAll(filtros = {}) {
     const rawData = fs.readFileSync(dataPath, "utf-8");
-    const campaigns = JSON.parse(rawData);
+    let campaigns = JSON.parse(rawData);
+
+    if (filtros.organizationId !== undefined) {
+      const organizationId = Number(filtros.organizationId);
+      campaigns = campaigns.filter((camp) => camp.organizationId === organizationId);
+    }
+
+    if (filtros.status !== undefined) {
+      campaigns = campaigns.filter((camp) => norm(camp.status) === norm(filtros.status));
+    }
 
     return campaigns.map(
       (camp) =>
