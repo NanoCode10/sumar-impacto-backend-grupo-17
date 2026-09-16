@@ -27,6 +27,14 @@ const dataPath = path.join(__dirname, "..", "data", "organizations.json");
  *  - delete       -> IMPLEMENTADO y funcionando.
  */
 class Organization {
+  /**
+   * Valores permitidos del dominio. Se escriben acá una sola vez y el resto del
+   * código los referencia (middlewares/validate.js), para que no convivan dos
+   * grafías del mismo valor.
+   */
+  static TYPES = ["ONG", "fundación", "comedor"];
+  static STATUSES = ["pendiente", "aprobada", "suspendida", "baja"];
+
   constructor(id, name, type, email, status) {
     this.id = id;
     this.name = name;
@@ -76,7 +84,7 @@ class Organization {
       data.name,
       data.type,
       data.email,
-      data.status || "approved"
+      data.status || "pendiente"
     );
 
     organizations.push(newOrg);

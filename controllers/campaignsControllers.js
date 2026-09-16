@@ -2,57 +2,66 @@ const Campaign = require("../models/Campaign");
 
 /**
  * RESPONSABILIDAD DE LA CAPA CONTROLLER
- * El controller traduce entre HTTP y el Model:
- *  - lee lo que llega en req (params, query, body);
- *  - llama al Model correspondiente (Campaign);
- *  - decide el status HTTP y el cuerpo de la respuesta (res);
- *  - NO accede al JSON ni contiene lógica de persistencia (eso es del Model).
+ * Igual que organizationsController: traduce entre HTTP y el Model.
  *
- * ESTADO
- *  - getCampaignById  -> IMPLEMENTADO.
- *  - getCampaigns     -> IMPLEMENTADO.
- *  - createCampaign   -> IMPLEMENTADO.
- *  - updateCampaign   -> IMPLEMENTADO.
- *  - deleteCampaign   -> IMPLEMENTADO.
+ * La diferencia es el try/catch: Campaign.create y Campaign.update lanzan un Error
+ * con statusCode cuando la organización referenciada no existe, porque el Model no
+ * tiene res para responder. Acá esa excepción se traduce a la respuesta HTTP.
  */
 
 /**
- * GET /campaigns/:id -> muestra una campaña como vista Pug.
+ * GET /api/campaigns  -> listado de todas las campañas.
  */
-function getCampaignById(req, res) {
-  const id = Number(req.params.id);
-
-  const campaign = Campaign.findById(id);
-
-  if (!campaign) {
-    return res.status(404).json({ error: "Campaña no encontrada" });
-  }
-  res.render("campaign", { campaign });
-}
-/* GET */
 function getCampaigns(req, res) {
   const campaigns = Campaign.findAll();
   res.status(200).json(campaigns);
 }
 
-/* POST */
+/**
+ * GET /api/campaigns/:id  -> una campaña en JSON.
+ */
+function getCampaignById(req, res) {
+  const id = Number(req.params.id);
+  const campaign = Campaign.findById(id);
+
+  if (!campaign) {
+    return res.status(404).json({ error: "Campaña no encontrada" });
+  }
+
+  res.status(200).json(campaign);
+}
+
+/**
+ * GET /campaigns/:id  -> la misma campaña, como página Pug.
+ */
+function renderCampaign(req, res) {
+  const id = Number(req.params.id);
+  const campaign = Campaign.findById(id);
+
+  if (!campaign) {
+    return res.status(404).json({ error: "Campaña no encontrada" });
+  }
+
+  res.render("campaign", { campaign });
+}
+
+/**
+ * POST /api/campaigns  -> crea una campaña.
+ */
 function createCampaign(req, res) {
   const { title, description, targetAmount, status, organizationId } = req.body;
-
-  if (!title || !description || !targetAmount || !organizationId) {
-    return res.status(400).json({ error: "Título, descripción, monto objetivo y organización son obligatorios" });
-  }
 
   try {
     const newCampaign = Campaign.create({ title, description, targetAmount, status, organizationId });
     res.status(201).json(newCampaign);
   } catch (err) {
-    const status = err.statusCode || 500;
-    res.status(status).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 }
 
-/* PUT */
+/**
+ * PUT /api/campaigns/:id  -> actualiza una campaña existente.
+ */
 function updateCampaign(req, res) {
   const id = Number(req.params.id);
   const { title, description, targetAmount, status, organizationId } = req.body;
@@ -63,14 +72,16 @@ function updateCampaign(req, res) {
     if (!updatedCampaign) {
       return res.status(404).json({ error: "Campaña no encontrada" });
     }
+
     res.status(200).json(updatedCampaign);
   } catch (err) {
-    const status = err.statusCode || 500;
-    res.status(status).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 }
 
-/* DELETE */
+/**
+ * DELETE /api/campaigns/:id  -> elimina una campaña.
+ */
 function deleteCampaign(req, res) {
   const id = Number(req.params.id);
   const deletedCampaign = Campaign.delete(id);
@@ -82,4 +93,11 @@ function deleteCampaign(req, res) {
   res.status(200).json({ message: "Campaña eliminada correctamente", campaign: deletedCampaign });
 }
 
-module.exports = { getCampaignById, getCampaigns, createCampaign, updateCampaign, deleteCampaign };
+module.exports = {
+  getCampaigns,
+  getCampaignById,
+  renderCampaign,
+  createCampaign,
+  updateCampaign,
+  deleteCampaign
+};

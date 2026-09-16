@@ -29,6 +29,9 @@ const dataPath = path.join(__dirname, "..", "data", "campaigns.json");
  *  - delete      -> IMPLEMENTADO (eliminación física, igual que Organization.delete).
  */
 class Campaign {
+  /** Valores permitidos del estado de una campaña. Ver models/Organization.js. */
+  static STATUSES = ["borrador", "activa", "suspendida", "cerrada"];
+
   constructor(id, organizationId, title, description, targetAmount, status) {
     this.id = id;
     this.organizationId = organizationId;
@@ -114,7 +117,7 @@ class Campaign {
       data.title,
       data.description,
       Number(data.targetAmount),
-      data.status || "active"
+      data.status || "borrador"
     );
 
     campaigns.push(newCampaign);

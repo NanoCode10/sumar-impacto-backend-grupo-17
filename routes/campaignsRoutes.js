@@ -1,22 +1,23 @@
 const express = require("express");
 
 const validateId = require("../middlewares/validateId");
+const { validateCampaign } = require("../middlewares/validate");
 
 const {
   getCampaigns,
   getCampaignById,
   createCampaign,
   updateCampaign,
-  deleteCampaign,
+  deleteCampaign
 } = require("../controllers/campaignsControllers");
 
 const router = express.Router();
 
-// Define las rutas para el recurso /campaigns
+// Rutas de la API del recurso, montadas en /api/campaigns (ver index.js)
 router.get("/", getCampaigns);
-router.post("/", createCampaign);
+router.post("/", validateCampaign("create"), createCampaign);
 router.get("/:id", validateId, getCampaignById);
-router.put("/:id", validateId, updateCampaign);
+router.put("/:id", validateId, validateCampaign("update"), updateCampaign);
 router.delete("/:id", validateId, deleteCampaign);
 
-module.exports = router;
+module.exports = router;

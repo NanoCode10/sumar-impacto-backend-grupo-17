@@ -3,9 +3,7 @@ const path = require("path");
 
 const organizationsRoutes = require("./routes/organizationsRoutes");
 const campaignsRoutes = require("./routes/campaignsRoutes");
-
-const Organization = require("./models/Organization");
-const Campaign = require("./models/Campaign");
+const viewsRoutes = require("./routes/viewsRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -17,16 +15,12 @@ app.use(express.json());
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-// Ruta de inicio
-app.get("/", (req, res) => {
-  const organizations = Organization.findAll();
-  const campaigns = Campaign.findAll();
-  res.render("home", { title: "SumarImpacto", organizations, campaigns });
-});
+// API REST: responde siempre JSON
+app.use("/api/organizations", organizationsRoutes);
+app.use("/api/campaigns", campaignsRoutes);
 
-// Rutas principales
-app.use("/organizations", organizationsRoutes);
-app.use("/campaigns", campaignsRoutes);
+// Páginas HTML con Pug: inicio y fichas de detalle
+app.use("/", viewsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);

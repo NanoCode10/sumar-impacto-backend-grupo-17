@@ -32,8 +32,9 @@ Lo implementado hasta el momento incluye:
 - arquitectura MVC
 - persistencia en archivos JSON
 - Pug como motor de vistas
-- CRUD de organizaciones: `GET/POST /organizations`, `GET/PUT/DELETE /organizations/:id`
-- CRUD de campañas: `GET/POST /campaigns`, `GET/PUT/DELETE /campaigns/:id` (valida que la organización exista)
+- API REST bajo `/api`: `GET/POST /api/organizations`, `GET/PUT/DELETE /api/organizations/:id`
+- API REST: `GET/POST /api/campaigns`, `GET/PUT/DELETE /api/campaigns/:id` (valida que la organización exista)
+- validación de campos obligatorios, tipos y valores permitidos (`middlewares/validate.js`)
 - vistas Pug: inicio (`/`), detalle de organización y detalle de campaña
 
 La siguiente captura corresponde a una prueba realizada con Postman sobre el

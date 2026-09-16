@@ -8,31 +8,15 @@ const Organization = require("../models/Organization");
  *  - decide el status HTTP y el cuerpo de la respuesta (res);
  *  - NO accede al JSON ni contiene lógica de persistencia (eso es del Model).
  *
- * ESTADO
- *  - getOrganizationById -> IMPLEMENTADO.
- *  - getOrganizations    -> IMPLEMENTADO.
- *  - createOrganization  -> IMPLEMENTADO.
- *  - updateOrganization  -> IMPLEMENTADO.
- *  - deleteOrganization  -> IMPLEMENTADO.
+ * Los campos obligatorios, los tipos y los valores permitidos los controla antes
+ * middlewares/validate.js, que además deja en req.body el valor canónico.
+ *
+ * Las funciones get* responden JSON (API, bajo /api). renderOrganization responde
+ * HTML y la usa routes/viewsRoutes.js.
  */
 
-function getOrganizationById(req, res) {
-  // Extrae el id de los parámetros de la solicitud y lo convierte a número
-  const id = Number(req.params.id);
-
-  // Busca la organización en la base de datos utilizando el modelo Organization y el id proporcionado
-  const organization = Organization.findById(id);
-
-  // Si no se encuentra la organización, devuelve un error 404 con un mensaje adecuado
-  if (!organization) {
-    return res.status(404).json({ error: "Organización no encontrada" });
-  }
-  // Si se encuentra la organización, renderiza la vista "organization" pasando la organización como contexto
-  res.render("organization", { organization });
-}
-
 /**
- * GET /organizations  -> listado de todas las organizaciones.
+ * GET /api/organizations  -> listado de todas las organizaciones.
  */
 function getOrganizations(req, res) {
   const organizations = Organization.findAll();
@@ -40,21 +24,45 @@ function getOrganizations(req, res) {
 }
 
 /**
- * POST /organizations  -> crea una organización.
+ * GET /api/organizations/:id  -> una organización en JSON.
+ */
+function getOrganizationById(req, res) {
+  const id = Number(req.params.id);
+  const organization = Organization.findById(id);
+
+  if (!organization) {
+    return res.status(404).json({ error: "Organización no encontrada" });
+  }
+
+  res.status(200).json(organization);
+}
+
+/**
+ * GET /organizations/:id  -> la misma organización, como página Pug.
+ */
+function renderOrganization(req, res) {
+  const id = Number(req.params.id);
+  const organization = Organization.findById(id);
+
+  if (!organization) {
+    return res.status(404).json({ error: "Organización no encontrada" });
+  }
+
+  res.render("organization", { organization });
+}
+
+/**
+ * POST /api/organizations  -> crea una organización.
  */
 function createOrganization(req, res) {
   const { name, type, email, status } = req.body;
-
-  if (!name || !type || !email) {
-    return res.status(400).json({ error: "Nombre, tipo y email son campos obligatorios" });
-  }
 
   const newOrganization = Organization.create({ name, type, email, status });
   res.status(201).json(newOrganization);
 }
 
 /**
- * PUT /organizations/:id  -> actualiza una organización existente.
+ * PUT /api/organizations/:id  -> actualiza una organización existente.
  */
 function updateOrganization(req, res) {
   const id = Number(req.params.id);
@@ -70,7 +78,7 @@ function updateOrganization(req, res) {
 }
 
 /**
- * DELETE /organizations/:id  -> elimina una organización.
+ * DELETE /api/organizations/:id  -> elimina una organización.
  */
 function deleteOrganization(req, res) {
   const id = Number(req.params.id);
@@ -85,8 +93,9 @@ function deleteOrganization(req, res) {
 }
 
 module.exports = {
-  getOrganizationById,
   getOrganizations,
+  getOrganizationById,
+  renderOrganization,
   createOrganization,
   updateOrganization,
   deleteOrganization
