@@ -104,6 +104,15 @@ class Campaign {
       throw err;
     }
 
+    // Regla de negocio: sólo una organización aprobada puede recibir campañas.
+    if (org.status !== Organization.APPROVED) {
+      const err = new Error(
+        `La organización ${org.id} está en estado ${org.status} y no puede recibir campañas`
+      );
+      err.statusCode = 409;
+      throw err;
+    }
+
     const rawData = fs.readFileSync(dataPath, "utf-8");
     const campaigns = JSON.parse(rawData);
 
@@ -148,6 +157,15 @@ class Campaign {
       if (!org) {
         const err = new Error("La organización indicada no existe");
         err.statusCode = 404;
+        throw err;
+      }
+      // Misma regla que en create: si no, se podría mover una campaña a una
+      // organización no aprobada y esquivar el control.
+      if (org.status !== Organization.APPROVED) {
+        const err = new Error(
+          `La organización ${org.id} está en estado ${org.status} y no puede recibir campañas`
+        );
+        err.statusCode = 409;
         throw err;
       }
       campaigns[index].organizationId = Number(data.organizationId);

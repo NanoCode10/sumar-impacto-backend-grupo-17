@@ -35,6 +35,9 @@ class Organization {
   static TYPES = ["ONG", "fundación", "comedor"];
   static STATUSES = ["pendiente", "aprobada", "suspendida", "baja"];
 
+  /** Único estado que habilita a tener campañas. Se referencia desde Campaign. */
+  static APPROVED = "aprobada";
+
   constructor(id, name, type, email, status) {
     this.id = id;
     this.name = name;
@@ -130,6 +133,19 @@ class Organization {
     const index = organizations.findIndex((org) => org.id === id);
     if (index === -1) {
       return null;
+    }
+
+    // Regla de negocio: una organización con campañas no se elimina, porque esas
+    // campañas quedarían apuntando a un id que ya no existe. Import diferido,
+    // igual que en Campaign, para no crear un ciclo entre los dos modelos.
+    const Campaign = require("./Campaign");
+    const campanias = Campaign.findAll().filter((campania) => campania.organizationId === id);
+    if (campanias.length > 0) {
+      const err = new Error(
+        `La organización ${id} tiene ${campanias.length} campaña(s) y no puede eliminarse`
+      );
+      err.statusCode = 409;
+      throw err;
     }
 
     const [deletedOrg] = organizations.splice(index, 1);

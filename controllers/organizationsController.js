@@ -83,13 +83,17 @@ function updateOrganization(req, res) {
 function deleteOrganization(req, res) {
   const id = Number(req.params.id);
 
-  const deletedOrganization = Organization.delete(id);
+  try {
+    const deletedOrganization = Organization.delete(id);
 
-  if (!deletedOrganization) {
-    return res.status(404).json({ error: "Organización no encontrada" });
+    if (!deletedOrganization) {
+      return res.status(404).json({ error: "Organización no encontrada" });
+    }
+
+    res.status(200).json({ message: "Organización eliminada correctamente", organization: deletedOrganization });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
-
-  res.status(200).json({ message: "Organización eliminada correctamente", organization: deletedOrganization });
 }
 
 module.exports = {
