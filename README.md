@@ -29,7 +29,7 @@ posteriormente, se incorporará **MongoDB**.
 
 ## Grupo
 
-**Grupo 17 - Desarrollo de Sistemas Web Back End**
+**Grupo A13 - Desarrollo de Sistemas Web Back End**
 
 ## Estado
 
