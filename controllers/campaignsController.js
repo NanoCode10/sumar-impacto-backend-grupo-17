@@ -36,12 +36,15 @@ function getCampaignById(req, res) {
 /**
  * GET /campaigns/:id  -> la misma campaña, como página Pug.
  */
-function renderCampaign(req, res) {
+function renderCampaign(req, res, next) {
   const id = Number(req.params.id);
   const campaign = Campaign.findById(id);
 
+  // Es una página HTML: el 404 lo arma el errorHandler con la vista error.pug.
   if (!campaign) {
-    return res.status(404).json({ error: "Campaña no encontrada" });
+    const err = new Error("Campaña no encontrada");
+    err.statusCode = 404;
+    return next(err);
   }
 
   res.render("campaign", { campaign });

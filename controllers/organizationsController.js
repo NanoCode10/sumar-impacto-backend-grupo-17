@@ -56,12 +56,15 @@ function getOrganizationById(req, res) {
 /**
  * GET /organizations/:id  -> la misma organización, como página Pug.
  */
-function renderOrganization(req, res) {
+function renderOrganization(req, res, next) {
   const id = Number(req.params.id);
   const organization = Organization.findById(id);
 
+  // Es una página HTML: el 404 lo arma el errorHandler con la vista error.pug.
   if (!organization) {
-    return res.status(404).json({ error: "Organización no encontrada" });
+    const err = new Error("Organización no encontrada");
+    err.statusCode = 404;
+    return next(err);
   }
 
   res.render("organization", { organization });
