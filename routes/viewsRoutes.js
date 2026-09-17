@@ -1,8 +1,7 @@
 const express = require("express");
 
 const validateId = require("../middlewares/validateId");
-const Organization = require("../models/Organization");
-const Campaign = require("../models/Campaign");
+const { renderHome } = require("../controllers/viewsController");
 const { renderOrganization } = require("../controllers/organizationsController");
 const { renderCampaign } = require("../controllers/campaignsController");
 
@@ -12,11 +11,7 @@ const { renderCampaign } = require("../controllers/campaignsController");
  */
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  const organizations = Organization.findAll();
-  const campaigns = Campaign.findAll();
-  res.render("home", { title: "SumarImpacto", organizations, campaigns });
-});
+router.get("/", renderHome);
 
 router.get("/organizations/:id", validateId, renderOrganization);
 router.get("/campaigns/:id", validateId, renderCampaign);
