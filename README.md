@@ -1,4 +1,4 @@
-# SumarImpacto Backend - Grupo 17
+# SumarImpacto Backend - Grupo A13
 
 Proyecto académico desarrollado para la materia **Desarrollo de Sistemas Web Back End**  
 del **IFTS N° 29 - 2do Cuatrimestre 2026**.
