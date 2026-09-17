@@ -96,7 +96,7 @@ function updateOrganization(req, res) {
 /**
  * DELETE /api/organizations/:id  -> elimina una organización.
  */
-function deleteOrganization(req, res) {
+function deleteOrganization(req, res, next) {
   const id = Number(req.params.id);
 
   try {
@@ -108,7 +108,7 @@ function deleteOrganization(req, res) {
 
     res.status(200).json({ message: "Organización eliminada correctamente", organization: deletedOrganization });
   } catch (err) {
-    res.status(err.statusCode || 500).json({ error: err.message });
+    next(err);
   }
 }
 

@@ -6,7 +6,8 @@ const Campaign = require("../models/Campaign");
  *
  * La diferencia es el try/catch: Campaign.create y Campaign.update lanzan un Error
  * con statusCode cuando la organización referenciada no existe, porque el Model no
- * tiene res para responder. Acá esa excepción se traduce a la respuesta HTTP.
+ * tiene res para responder. Acá esa excepción se captura y se delega con next(err)
+ * al errorHandler global (middlewares/errors.js), que arma la respuesta HTTP.
  */
 
 /**
@@ -49,21 +50,21 @@ function renderCampaign(req, res) {
 /**
  * POST /api/campaigns  -> crea una campaña.
  */
-function createCampaign(req, res) {
+function createCampaign(req, res, next) {
   const { title, description, targetAmount, status, organizationId } = req.body;
 
   try {
     const newCampaign = Campaign.create({ title, description, targetAmount, status, organizationId });
     res.status(201).json(newCampaign);
   } catch (err) {
-    res.status(err.statusCode || 500).json({ error: err.message });
+    next(err);
   }
 }
 
 /**
  * PUT /api/campaigns/:id  -> actualiza una campaña existente.
  */
-function updateCampaign(req, res) {
+function updateCampaign(req, res, next) {
   const id = Number(req.params.id);
   const { title, description, targetAmount, status, organizationId } = req.body;
 
@@ -76,7 +77,7 @@ function updateCampaign(req, res) {
 
     res.status(200).json(updatedCampaign);
   } catch (err) {
-    res.status(err.statusCode || 500).json({ error: err.message });
+    next(err);
   }
 }
 
