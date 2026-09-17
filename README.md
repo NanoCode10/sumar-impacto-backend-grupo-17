@@ -1,4 +1,4 @@
-# SumarImpacto Backend - Grupo 17
+# SumarImpacto Backend - Grupo A13
 
 Proyecto académico desarrollado para la materia **Desarrollo de Sistemas Web Back End**  
 del **IFTS N° 29 - 2do Cuatrimestre 2026**.
@@ -109,7 +109,7 @@ Los comandos `npm start` y `npm run dev` están definidos en la sección `script
 
 ## Grupo
 
-**Grupo 17 - Desarrollo de Sistemas Web Back End**
+**Grupo A13 - Desarrollo de Sistemas Web Back End**
 
 ## Estado
 
