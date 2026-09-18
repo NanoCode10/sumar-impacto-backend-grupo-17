@@ -139,8 +139,11 @@ Actualmente se prueban:
 Para ejecutar todas las pruebas:
 
 ```bash
-node --test tests/validateId.test.js tests/validateOrganization.test.js tests/validateCampaigns.test.js tests/reglasNegocio.test.js
+npm test
 ```
+
+que ejecuta `node --test`. El corredor nativo descubre solo todos los archivos
+`*.test.js` del proyecto, así que una prueba nueva entra sin tocar nada.
 
 Resultado actual:
 
