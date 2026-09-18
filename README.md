@@ -37,29 +37,29 @@ Lo implementado hasta el momento incluye:
 
 Todas las rutas de la API están bajo `/api` y responden siempre JSON.
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/organizations` | Lista organizaciones (filtros opcionales `type` y `status`) |
-| POST | `/api/organizations` | Crea una organización |
-| GET | `/api/organizations/:id` | Obtiene una organización |
-| GET | `/api/organizations/:id/campaigns` | Lista las campañas de una organización |
-| PUT | `/api/organizations/:id` | Actualiza una organización |
-| DELETE | `/api/organizations/:id` | Elimina una organización |
-| GET | `/api/campaigns` | Lista campañas (filtros opcionales `organizationId` y `status`) |
-| POST | `/api/campaigns` | Crea una campaña |
-| GET | `/api/campaigns/:id` | Obtiene una campaña |
-| PUT | `/api/campaigns/:id` | Actualiza una campaña |
-| DELETE | `/api/campaigns/:id` | Elimina una campaña |
+| Método | Ruta                               | Descripción                                                     |
+| ------ | ---------------------------------- | --------------------------------------------------------------- |
+| GET    | `/api/organizations`               | Lista organizaciones (filtros opcionales `type` y `status`)     |
+| POST   | `/api/organizations`               | Crea una organización                                           |
+| GET    | `/api/organizations/:id`           | Obtiene una organización                                        |
+| GET    | `/api/organizations/:id/campaigns` | Lista las campañas de una organización                          |
+| PUT    | `/api/organizations/:id`           | Actualiza una organización                                      |
+| DELETE | `/api/organizations/:id`           | Elimina una organización                                        |
+| GET    | `/api/campaigns`                   | Lista campañas (filtros opcionales `organizationId` y `status`) |
+| POST   | `/api/campaigns`                   | Crea una campaña                                                |
+| GET    | `/api/campaigns/:id`               | Obtiene una campaña                                             |
+| PUT    | `/api/campaigns/:id`               | Actualiza una campaña                                           |
+| DELETE | `/api/campaigns/:id`               | Elimina una campaña                                             |
 
 ## Vistas HTML (Pug)
 
 Estas rutas NO forman parte de la API: devuelven páginas HTML.
 
-| Ruta | Página |
-|---|---|
-| `/` | Inicio, con el listado de organizaciones y campañas |
-| `/organizations/:id` | Detalle de una organización |
-| `/campaigns/:id` | Detalle de una campaña |
+| Ruta                 | Página                                              |
+| -------------------- | --------------------------------------------------- |
+| `/`                  | Inicio, con el listado de organizaciones y campañas |
+| `/organizations/:id` | Detalle de una organización                         |
+| `/campaigns/:id`     | Detalle de una campaña                              |
 
 ## Consultas
 
@@ -106,7 +106,6 @@ Middlewares en `middlewares/`:
 La siguiente captura corresponde a una prueba realizada con Postman sobre
 `GET /api/organizations/1`.
 
-
 <p align="center">
   <img src="docs/images/postman-get-organization-1.png"
        alt="Prueba en Postman de GET /api/organizations/1"
@@ -124,6 +123,35 @@ Casos verificados sobre la API actual:
 - GET /api/organizations/abc → 400 Bad Request
 - GET /api/organizations/0 → 400 Bad Request
 
+## Testing automatizado
+
+El proyecto incluye pruebas automatizadas utilizando el módulo nativo de Node.js `node:test` junto con `node:assert/strict`.
+
+No se agregaron dependencias externas para testing.
+
+Actualmente se prueban:
+
+- `validateId.test.js`: validación de IDs válidos e inválidos, incluyendo la delegación de errores mediante `next(err)`.
+- `validateOrganization.test.js`: validaciones de organizaciones, campos obligatorios, tipos, valores permitidos y normalización.
+- `validateCampaigns.test.js`: validaciones de campañas, tipos reales de datos, campos obligatorios y valores permitidos.
+- `reglasNegocio.test.js`: reglas de negocio relacionadas con la creación de campañas y el estado de las organizaciones.
+
+Para ejecutar todas las pruebas:
+
+```bash
+node --test tests/validateId.test.js tests/validateOrganization.test.js tests/validateCampaigns.test.js tests/reglasNegocio.test.js
+```
+
+Resultado actual:
+
+```text
+tests 56
+pass 56
+fail 0
+```
+
+Las pruebas se ejecutan de forma aislada y no dejan modificaciones permanentes en los archivos de persistencia `data/*.json`.
+
 ## Tecnologías
 
 - JavaScript
@@ -132,7 +160,7 @@ Casos verificados sobre la API actual:
 - Pug
 - JSON
 - Nodemon (desarrollo)
-- MongoDB *(más adelante durante la cursada)*
+- MongoDB _(más adelante durante la cursada)_
 
 ## Cómo ejecutar el proyecto
 
