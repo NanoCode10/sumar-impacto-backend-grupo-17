@@ -5,9 +5,10 @@ const Campaign = require("../models/Campaign");
  * Igual que organizationsController: traduce entre HTTP y el Model.
  *
  * La diferencia es el try/catch: Campaign.create y Campaign.update lanzan un Error
- * con statusCode cuando la organización referenciada no existe, porque el Model no
- * tiene res para responder. Acá esa excepción se captura y se delega con next(err)
- * al errorHandler global (middlewares/errors.js), que arma la respuesta HTTP.
+ * con statusCode cuando la organización referenciada no existe (404) o no está
+ * aprobada (409), porque el Model no tiene res para responder. Acá esa excepción
+ * se captura y se delega con next(err) al errorHandler global
+ * (middlewares/errors.js), que arma la respuesta HTTP.
  */
 
 /**

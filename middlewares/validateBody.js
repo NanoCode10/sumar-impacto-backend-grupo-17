@@ -8,6 +8,9 @@ const Campaign = require("../models/Campaign");
  * no llega a ejecutarse. Valida campos obligatorios, tipos de datos y valores
  * permitidos, que son tres de los cinco puntos que pide la consigna.
  *
+ * El tipo se controla sobre el valor real del JSON, ANTES de normalizar: un texto
+ * debe llegar como string y un número como number ("150000" o true dan 400).
+ *
  * Cada validador se usa en dos modos:
  *  - "create" (POST): exige los campos obligatorios.
  *  - "update" (PUT): sólo valida los campos que vinieron en el body.

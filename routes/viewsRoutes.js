@@ -8,6 +8,7 @@ const { renderCampaign } = require("../controllers/campaignsController");
 /**
  * Páginas HTML generadas con Pug. Son las únicas rutas que usan res.render;
  * la API vive bajo /api y siempre responde JSON.
+ * El Router sólo define las rutas: Router -> Controller -> Model -> vista Pug.
  */
 const router = express.Router();
 
