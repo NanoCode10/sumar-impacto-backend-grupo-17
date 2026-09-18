@@ -104,11 +104,8 @@ Middlewares en `middlewares/`:
 ## Evidencia de pruebas
 
 La siguiente captura corresponde a una prueba realizada con Postman sobre
-`GET /organizations/1` en una versión anterior del proyecto, cuando la API
-todavía no estaba bajo `/api`.
+`GET /organizations/1`.
 
-> **Nota:** esta evidencia deberá actualizarse. Actualmente `/organizations/1`
-> es una vista HTML y el endpoint JSON equivalente es `GET /api/organizations/1`.
 
 <p align="center">
   <img src="docs/images/postman-get-organization-1.png"
