@@ -104,17 +104,17 @@ Middlewares en `middlewares/`:
 ## Evidencia de pruebas
 
 La siguiente captura corresponde a una prueba realizada con Postman sobre
-`GET /organizations/1`.
+`GET /api/organizations/1`.
 
 
 <p align="center">
   <img src="docs/images/postman-get-organization-1.png"
-       alt="Prueba en Postman de GET /organizations/1 (versión anterior de la API)"
+       alt="Prueba en Postman de GET /api/organizations/1"
        width="900">
 </p>
 
 <p align="center">
-  <em>Prueba de GET /organizations/1 con Postman (versión anterior de la API).</em>
+  <em>Prueba de GET /api/organizations/1 con Postman.</em>
 </p>
 
 Casos verificados sobre la API actual:
