@@ -25,6 +25,14 @@ const invalid = (res, message) => res.status(400).json({ error: message });
 
 const missingFields = (body, fields) =>
   fields.filter((field) => body[field] === undefined || body[field] === "");
+  /* opción para filtrar también los casos de null y strings con puros espacios como si fueran faltantes:
+  fields.filter(
+    (field) =>
+      body[field] === undefined ||
+      body[field] === null ||
+      (typeof body[field] === "string" && body[field].trim() === "")
+  );*/
+//considera los campos faltantes, null, strings vacíos o strings con espacios como faltantes.
 
 function validateOrganization(mode) {
   return (req, res, next) => {
